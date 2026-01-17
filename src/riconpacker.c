@@ -256,6 +256,7 @@ static int platformSizeCount = 8;
 static int packValidCount = 0;              // Valid ico entries counter
 
 static int sizeListActive = 0;              // Current list text entry
+static int exportFormatActive = 0;
 
 // WARNING: This global is required by export functions
 static bool exportTextChunkChecked = true;  // Flag to embed text as a PNG chunk (rIPt)
