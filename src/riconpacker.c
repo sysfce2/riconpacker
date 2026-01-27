@@ -847,10 +847,10 @@ int main(int argc, char *argv[])
             GuiSetStyle(STATUSBAR, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
             //----------------------------------------------------------------------------------------
 
-            // NOTE: If some overlap window is open and main window is locked, we draw a background rectangle, probably too big in 2x mode
+            // NOTE: If some overlap window is open and main window is locked, draw a background rectangle, probably too big in 2x mode
             if (GuiIsLocked()) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)), 0.85f));
 
-            // WARNING: Before drawing the windows, we unlock them
+            // WARNING: Before drawing the windows, unlock them
             GuiUnlock();
 
             // GUI: Icon poem Window
