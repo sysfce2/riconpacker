@@ -924,7 +924,7 @@ int main(int argc, char *argv[])
 
                 GuiLabel((Rectangle){ messageBox.x + 12, messageBox.y + 12 + 24, 106, 24 }, "Icon Format:");
 
-                // NOTE: If current platform is macOS, we support .icns file export
+                // NOTE: If current platform is macOS, support .icns file export
                 GuiComboBox((Rectangle){ messageBox.x + 12 + 88, messageBox.y + 12 + 24, 136, 24 }, (mainToolbarState.platformActive == 1)? "Icon (.ico);Images (.png);Icns (.icns)" : "Icon (.ico);Images (.png)", &exportFormatActive);
 
                 // WARNING: exportTextChunkChecked is used as a global variable required by SaveICO() and SaveICNS() functions
@@ -1062,7 +1062,7 @@ int main(int argc, char *argv[])
                     else
                     {
                         // Download file from MEMFS (emscripten memory filesystem)
-                        // NOTE: Second argument must be a simple filename (we can't use directories)
+                        // NOTE: Second argument must be a simple filename (can't use directories)
                         // NOTE: Included security check to (partially) avoid malicious code on PLATFORM_WEB
                         if (strchr(outFileName, '\'') == NULL) emscripten_run_script(TextFormat("saveFileFromMEMFSToDisk('%s','%s')", outFileName, GetFileName(outFileName)));
                     }
@@ -1094,7 +1094,7 @@ int main(int argc, char *argv[])
 
                 #if defined(PLATFORM_WEB)
                     // Download file from MEMFS (emscripten memory filesystem)
-                    // NOTE: Second argument must be a simple filename (we can't use directories)
+                    // NOTE: Second argument must be a simple filename (can't use directories)
                     emscripten_run_script(TextFormat("saveFileFromMEMFSToDisk('%s','%s')", outFileName, GetFileName(outFileName)));
                 #endif
                 }
@@ -1578,7 +1578,7 @@ static IconEntry *LoadIconPackFromICO(const char *fileName, int *count)
                 // WARNING: Image data on th IcoDirEntry may be in either:
                 //  - Windows BMP format, excluding the BITMAPFILEHEADER structure
                 //  - PNG format, stored in its entirety
-                // NOTE: We are only supporting the PNG format, not BMP data
+                // NOTE: Only supporting the PNG format, not BMP data
                 entries[i].image = LoadImageFromMemory(".png", icoImageData, icoDirEntry[i].size);
 
                 if ((entries[i].image.data != NULL) && (entries[i].image.width != 0))
@@ -1798,9 +1798,8 @@ static IconEntry *LoadIconPackFromICNS(const char *fileName, int *count)
                 icnSize = SWAP_INT32(sizeBE);
 
                 processedSize += 8;     // IcnType an IcnSize parameters
-                icnSize -= 8;           // IcnSize also considers type and size parameters, we must subtract them to get actual data size
+                icnSize -= 8;           // IcnSize also considers type and size parameters, it must be subtracted to get actual data size
 
-                // We have next icn type and size, now we must check if it's a supported format to load it
                 LOG("INFO: [%s] ICNS OSType: %c%c%c%c [%i bytes]\n", GetFileName(fileName), icnType[0], icnType[1], icnType[2], icnType[3], icnSize);
 
                 // NOTE: Only supported formats including PNG data
@@ -1824,7 +1823,7 @@ static IconEntry *LoadIconPackFromICNS(const char *fileName, int *count)
                     ((icnType[0] == 'i') && (icnType[1] == 'c') && (icnType[2] == '1') && (icnType[3] == '4')) ||   // 512x512, ic14 (256x256@2x "retina")
                     ((icnType[0] == 'i') && (icnType[1] == 'c') && (icnType[2] == '1') && (icnType[3] == '0')))     // 1024x1024, ic10 (512x512@2x "retina")
                 {
-                    // NOTE: We only support loading PNG data, JPEG2000 and ARGB data not supported
+                    // NOTE: Only support loading PNG data, JPEG2000 and ARGB data not supported
 
                     unsigned char *icnImageData = (unsigned char *)RL_CALLOC(icnSize, 1);
                     fread(icnImageData, 1, icnSize, icnsFile);
@@ -1839,7 +1838,7 @@ static IconEntry *LoadIconPackFromICNS(const char *fileName, int *count)
                         (icnImageData[6] == 0x1a) &&
                         (icnImageData[7] == 0x0a))
                     {
-                        // Data contains a valid PNG file, we can load it
+                        // Data contains a valid PNG file, it can be loaded
                         /*
                         int colors = 0;
                         int bits = 0;
@@ -1893,7 +1892,7 @@ static IconEntry *LoadIconPackFromICNS(const char *fileName, int *count)
                 }
                 else
                 {
-                    // In case OSType is not supported we just skip the required size
+                    // In case OSType is not supported, just skip the required size
                     fseek(icnsFile, icnSize, SEEK_CUR);
                 }
 
@@ -1969,7 +1968,7 @@ static void SaveIconPackToICNS(IconEntry *entries, int entryCount, const char *f
         }
     }
 
-    // We got the images converted to PNG in memory, now we can create the icns file
+    // Got the images converted to PNG in memory, now the icns file can be created
 
     FILE *icnsFile = fopen(fileName, "wb");
 
@@ -2000,8 +1999,7 @@ static void SaveIconPackToICNS(IconEntry *entries, int entryCount, const char *f
         fwrite("icns", 1, 4, icnsFile);
 
         // ICNS file size, all file including header,
-        // We init it with expected chunck size but
-        // we need to accumulate every generated PNG size
+        // Init it with expected chunck size but every generated PNG size needs to be accumulated
         unsigned int icnsFileSize = 8 + 8*packValidCount;
         for (int i = 0; i < packValidCount; i++) icnsFileSize += pngDataSizes[i];
         unsigned char sizeBE[4] = { 0 };
