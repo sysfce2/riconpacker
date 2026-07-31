@@ -904,15 +904,16 @@ int main(int argc, char *argv[])
             if (showIssueReportWindow)
             {
                 Rectangle messageBox = { (float)screenWidth/2 - 300/2, (float)screenHeight/2 - 190/2 - 20, 300, 190 };
-                int result = GuiMessageBox(messageBox, "#220#Report Issue",
-                    "Do you want to report any issue or\nfeature request for this program?\n\ngithub.com/raysan5/riconpacker", "#186#Report on GitHub");
+                int btnActive = -1;
+                GuiMessageBox(messageBox, "#220#Report Issue",
+                    "Do you want to report any issue or\nfeature request for this program?\n\ngithub.com/raysan5/raylib-project-creator", "#186#Report on GitHub", &btnActive);
 
-                if (result == 1)    // Report issue pressed
+                if (btnActive == 1)    // Report issue pressed
                 {
                     OpenURL("https://github.com/raysan5/riconpacker/issues");
                     showIssueReportWindow = false;
                 }
-                else if (result == 0) showIssueReportWindow = false;
+                else if (btnActive == 0) showIssueReportWindow = false;
             }
             //----------------------------------------------------------------------------------------
 
@@ -921,7 +922,8 @@ int main(int argc, char *argv[])
             if (showExportWindow)
             {
                 Rectangle messageBox = { (float)screenWidth/2 - 248/2, (float)screenHeight/2 - 200/2, 248, 112 };
-                int result = GuiMessageBox(messageBox, "#7#Export Icon File", " ", "#7#Export Icon");
+                int btnActive = -1;
+                GuiMessageBox(messageBox, "#7#Export Icon File", " ", "#7#Export Icon", &btnActive);
 
                 GuiLabel((Rectangle){ messageBox.x + 12, messageBox.y + 12 + 24, 106, 24 }, "Icon Format:");
 
@@ -931,12 +933,12 @@ int main(int argc, char *argv[])
                 // WARNING: exportTextChunkChecked is used as a global variable required by SaveICO() and SaveICNS() functions
                 //GuiCheckBox((Rectangle){ messageBox.x + 20, messageBox.y + 48 + 24, 16, 16 }, "Export text poem with icon", &exportTextChunkChecked);
 
-                if (result == 1)    // Export button pressed
+                if (btnActive == 1)    // Export button pressed
                 {
                     showExportWindow = false;
                     showExportFileDialog = true;
                 }
-                else if (result == 0) showExportWindow = false;
+                else if (btnActive == 0) showExportWindow = false;
             }
             //----------------------------------------------------------------------------------
 
@@ -944,10 +946,12 @@ int main(int argc, char *argv[])
             //----------------------------------------------------------------------------------------
             if (showExitWindow)
             {
-                int result = GuiMessageBox((Rectangle){ screenWidth/2.0f - 125, screenHeight/2.0f - 50, 250, 100 }, "#159#Closing rIconPacker", "Do you really want to exit?", "Yes;No");
+                int btnActive = -1;
+                GuiMessageBox((Rectangle){ screenWidth/2.0f - 125, screenHeight/2.0f - 50, 250, 100 },
+                    "#159#Closing rIconPacker", "Do you really want to exit?", "#112#Yes;#113#No", &btnActive);
 
-                if ((result == 0) || (result == 2)) showExitWindow = false;
-                else if (result == 1) closeWindow = true;
+                if ((btnActive == 0) || (btnActive == 2)) showExitWindow = false;
+                else if (btnActive == 1) closeWindow = true;
             }
             //----------------------------------------------------------------------------------------
 
@@ -976,13 +980,18 @@ int main(int argc, char *argv[])
             //----------------------------------------------------------------------------------------
             if (showExportFileDialog)
             {
+                int result = -1;
 #if defined(CUSTOM_MODAL_DIALOGS)
-                int result = -1;
-                if (exportFormatActive == 0) result = GuiTextInputBox((Rectangle){ screenWidth/2 - 280/2, screenHeight/2 - 112/2 - 30, 280, 112 }, "#7#Export icon file...", NULL, "#7#Export", outFileName, 512, NULL);
-                else if (exportFormatActive == 1) result = GuiTextInputBox((Rectangle){ screenWidth/2 - 280/2, screenHeight/2 - 112/2 - 30, 280, 112 }, "#7#Export image files...", NULL, "#7#Export", outFileName, 512, NULL);
-                else if (exportFormatActive == 2) result = GuiTextInputBox((Rectangle){ screenWidth/2 - 280/2, screenHeight/2 - 112/2 - 30, 280, 112 }, "#7#Export icns files...", NULL, "#7#Export", outFileName, 512, NULL);
+                if (exportFormatActive == 0)
+                    GuiTextInputBox((Rectangle){ screenWidth/2 - 280/2, screenHeight/2 - 112/2 - 30, 280, 112 },
+                        "#7#Export icon file...", NULL, outFileName, 512, "#7#Export", &result, NULL);
+                else if (exportFormatActive == 1)
+                    GuiTextInputBox((Rectangle){ screenWidth/2 - 280/2, screenHeight/2 - 112/2 - 30, 280, 112 },
+                        "#7#Export image files...", NULL, outFileName, 512, "#7#Export", &result, NULL);
+                else if (exportFormatActive == 2)
+                    GuiTextInputBox((Rectangle){ screenWidth/2 - 280/2, screenHeight/2 - 112/2 - 30, 280, 112 },
+                        "#7#Export icns files...", NULL, outFileName, 512, "#7#Export", &result, NULL);
 #else
-                int result = -1;
                 if (exportFormatActive == 0) result = GuiFileDialog(DIALOG_SAVE_FILE, "Export icon file...", outFileName, "*.ico", "Icon File (*.ico)");
                 else if (exportFormatActive == 1) result = GuiFileDialog(DIALOG_SAVE_FILE, "Export image files...", outFileName, "*.png", "Image Files (*.png)");
                 else if (exportFormatActive == 2) result = GuiFileDialog(DIALOG_SAVE_FILE, "Export icns file...", outFileName, "*.icns", "Icns File (*.icns)");
