@@ -1264,9 +1264,9 @@ static void ProcessCommandLine(int argc, char *argv[])
             if (((i + 1) < argc) && (argv[i + 1][0] != '-'))
             {
                 if (IsFileExtension(argv[i + 1], ".ico") ||
-                    ((outPlatform == 1) && IsFileExtension(argv[i + 1], ".icns")))      // macOS
+                    ((outPlatform == 1) && IsFileExtension(argv[i + 1], ".icns"))) // macOS
                 {
-                    strcpy(outFileName, argv[i + 1]);   // Read output filename
+                    strcpy(outFileName, argv[i + 1]);
                 }
 
                 i++;
